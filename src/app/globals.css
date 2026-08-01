@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 244 245 247; /* platinum */
+    --surface: 255 255 255;
+    --surface-border: 0 0 0;
+    --surface-border-opacity: 0.06;
+    --foreground: 7 9 14;
+    --muted: 100 106 119;
+    /* Secondary accent for headline text — distinct from --foreground but
+       still legible on the light background. Was previously a single
+       fixed light color (accent-platinum) that broke here. */
+    --emphasis: 71 85 105;
+  }
+
+  .dark {
+    --background: 7 9 14; /* midnight charcoal */
+    --surface: 13 17 28; /* translucent slate */
+    --surface-border: 255 255 255;
+    --surface-border-opacity: 0.06;
+    --foreground: 244 245 247;
+    --muted: 148 155 168;
+    --emphasis: 203 213 225;
+  }
+
+  * {
+    border-color: rgb(var(--surface-border) / var(--surface-border-opacity));
+  }
+
+  body {
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))] antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+@layer components {
+  .glass-surface {
+    @apply bg-[rgb(var(--surface))]/70 backdrop-blur-xl border;
+    border-color: rgb(var(--surface-border) / var(--surface-border-opacity));
+  }
+
+  .glass-border {
+    border-color: rgb(var(--surface-border) / var(--surface-border-opacity));
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
