@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { SECURITY_FEATURES } from "@/lib/security-features";
 
-const CHECKLIST = ["No plaintext secrets", "Reviewed line by line", "Nothing left to chance"];
+const CHECKLIST = ["End-to-end encryption", "Multi-layered verification", "Absolute capital safety"];
 
 export function SecuritySection() {
   return (
@@ -21,11 +21,11 @@ export function SecuritySection() {
             className="lg:col-span-7"
           >
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-bull">
-              Security, not marketing
+              Institutional-grade protection
             </span>
             <h2 className="mt-4 text-balance text-3xl font-semibold leading-[1.15] tracking-tight text-[rgb(var(--foreground))] sm:text-4xl lg:text-[2.75rem]">
-              We don&apos;t just say secure.{" "}
-              <span className="text-[rgb(var(--emphasis))]">We build like it.</span>
+              Your assets and data,{" "}
+              <span className="text-[rgb(var(--emphasis))]">secured without compromise.</span>
             </h2>
           </motion.div>
 
@@ -37,8 +37,7 @@ export function SecuritySection() {
             className="lg:col-span-5"
           >
             <p className="text-balance leading-relaxed text-[rgb(var(--muted))]">
-              Every layer here exists because we thought carefully about how
-              it could fail — not because it reads well in a pitch deck.
+              We employ rigorous security protocols, advanced encryption architecture, and strict compliance measures to safeguard every transaction and investment portfolio.
             </p>
             <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
               {CHECKLIST.map((item) => (

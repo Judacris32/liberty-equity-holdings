@@ -35,7 +35,7 @@ export function FinalCtaSection() {
               Your next trade is one account away.
             </h2>
             <p className="mt-5 max-w-lg text-balance leading-relaxed text-white/70">
-              No hidden fees, no guaranteed promises — just a platform built
+              No hidden fees, no guaranteed promises, just a platform built
               to be honest with you from the first click.
             </p>
 

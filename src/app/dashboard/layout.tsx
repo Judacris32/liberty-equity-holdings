@@ -21,11 +21,17 @@ export default async function DashboardLayout({
 
   const account = await getAccount();
 
+  // Portfolio value = what's available plus what trading has returned.
+  const portfolioValue = account
+    ? parseFloat(account.available_balance) + parseFloat(account.total_profit)
+    : 0;
+
   return (
     <DashboardShell
       kycStatus={account?.kyc_status ?? "unverified"}
       userEmail={user.email ?? ""}
       isAdmin={account?.is_admin ?? false}
+      portfolioValue={portfolioValue}
     >
       {children}
     </DashboardShell>

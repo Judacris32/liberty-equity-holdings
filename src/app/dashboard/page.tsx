@@ -4,9 +4,15 @@ import { getAccount } from "@/lib/queries/account";
 import { getRecentTransactions } from "@/lib/queries/transactions";
 import { getRecentOrders } from "@/lib/queries/orders";
 import { BalanceHero } from "@/components/dashboard/balance-hero";
-import { StatRow } from "@/components/dashboard/stat-row";
+import { StatGrid } from "@/components/dashboard/stat-grid";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { SetupProgress } from "@/components/dashboard/setup-progress";
+import { VerificationPrompt } from "@/components/dashboard/verification-prompt";
+import { SupportCard } from "@/components/dashboard/support-card";
+import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
+import { TradingViewMarketOverview } from "@/components/landing/tradingview-market-overview";
+import { TradingViewTimeline } from "@/components/landing/tradingview-timeline";
+import { BarChart3, Newspaper } from "lucide-react";
 
 function greeting() {
   const hour = new Date().getHours();
@@ -61,25 +67,59 @@ export default async function DashboardOverviewPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold capitalize tracking-tight text-[rgb(var(--foreground))]">
-          {greeting()}, {displayName}
+        <h1 className="text-2xl font-semibold capitalize tracking-tight text-[rgb(var(--foreground))] sm:text-3xl">
+          {greeting()}, {displayName}!
         </h1>
-        <p className="mt-1 text-sm text-[rgb(var(--muted))]">
-          Here&apos;s where things stand right now.
-        </p>
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-sm text-[rgb(var(--muted))]">
+            Account Status:
+          </span>
+          <span
+            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+              account.kyc_status === "verified"
+                ? "bg-bull/10 text-bull"
+                : account.kyc_status === "pending"
+                  ? "bg-amber-500/10 text-amber-500"
+                  : "bg-white/[0.06] text-[rgb(var(--muted))]"
+            }`}
+          >
+            {account.kyc_status === "verified"
+              ? "Verified"
+              : account.kyc_status === "pending"
+                ? "Pending Review"
+                : "Active"}
+          </span>
+        </div>
       </div>
 
-      <BalanceHero account={account} />
+      {/* Balance beside the stat grid, matching a dense terminal layout */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.15fr]">
+        <BalanceHero account={account} />
+        <StatGrid account={account} orderCount={orders.length} />
+      </div>
 
-      <StatRow account={account} orderCount={orders.length} />
+      <VerificationPrompt kycStatus={account.kyc_status} />
+
+      {/* Market overview beside live news */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <DashboardPanel icon={BarChart3} title="Market Overview">
+          <TradingViewMarketOverview />
+        </DashboardPanel>
+        <DashboardPanel icon={Newspaper} title="Live Market News">
+          <TradingViewTimeline />
+        </DashboardPanel>
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]">
         <ActivityFeed transactions={transactions} orders={orders} />
-        <SetupProgress
-          account={account}
-          hasTransactions={transactions.length > 0}
-          hasOrders={orders.length > 0}
-        />
+        <div className="flex flex-col gap-6">
+          <SetupProgress
+            account={account}
+            hasTransactions={transactions.length > 0}
+            hasOrders={orders.length > 0}
+          />
+          <SupportCard />
+        </div>
       </div>
     </div>
   );

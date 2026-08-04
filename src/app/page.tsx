@@ -4,11 +4,10 @@ import { ProofToast } from "@/components/landing/proof-toast";
 import { TradingViewTicker } from "@/components/landing/tradingview-ticker";
 import { HowItWorksSection } from "@/components/landing/how-it-works-section";
 import { MarketsSection } from "@/components/landing/markets-section";
-import { SecuritySection } from "@/components/landing/security-section";
-import { TransparencySection } from "@/components/landing/transparency-section";
 import { InsightsSection } from "@/components/landing/insights-section";
+import { MechanicsSection } from "@/components/landing/mechanics-section";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { FaqSection } from "@/components/landing/faq-section";
-import { AboutSection } from "@/components/landing/about-section";
 import { FinalCtaSection } from "@/components/landing/final-cta-section";
 import { Footer } from "@/components/landing/footer";
 
@@ -20,11 +19,10 @@ export default function Home() {
       <TradingViewTicker />
       <HowItWorksSection />
       <MarketsSection />
-      <SecuritySection />
-      <TransparencySection />
       <InsightsSection />
+      <MechanicsSection />
+      <TestimonialsSection />
       <FaqSection />
-      <AboutSection />
       <FinalCtaSection />
       <Footer />
       <ProofToast />

@@ -12,7 +12,7 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-[rgb(var(--muted))]">
-              A trading platform built around clarity — real data, honest
+              A trading platform built around clarity, real data, honest
               pricing, and no promises we can&apos;t keep.
             </p>
           </div>
@@ -41,10 +41,6 @@ export function Footer() {
         <div className="mt-14 flex flex-col gap-4 border-t glass-border pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-[rgb(var(--muted))]">
             &copy; {year} Liberty Equity Holdings. All rights reserved.
-          </p>
-          <p className="max-w-lg text-xs leading-relaxed text-[rgb(var(--muted))]">
-            Trading involves risk, including the possible loss of principal.
-            No return is guaranteed or implied anywhere on this site.
           </p>
         </div>
       </div>

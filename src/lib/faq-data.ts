@@ -6,39 +6,33 @@ export type FaqItem = {
 
 export const FAQ_ITEMS: FaqItem[] = [
   {
-    id: "safety",
-    question: "Is my money actually safe here?",
+    id: "security",
+    question: "How secure is my personal data and financial investment?",
     answer:
-      "Your session never touches localStorage — authentication runs through HTTP-only cookies verified server-side on every request. Deposits and withdrawals stay locked until identity verification clears, and every action gets logged to your account history.",
+      "We treat your security as our top priority. All sensitive information and financial allocations are protected by advanced encryption protocols, secure server-side session handling, and multi-layered verification layers to keep your assets completely safe.",
   },
   {
-    id: "kyc-time",
-    question: "How long does identity verification take?",
+    id: "minimum-amount",
+    question: "What is the minimum amount required to start trading?",
     answer:
-      "Once you submit a document, it moves into a review queue. In a live deployment this is typically same-day; nothing about your account is limited beyond deposits and withdrawals while it's pending — you can still explore the terminal and markets.",
+      "You can get started right away with our accessible entry tier starting at $3,000, allowing you to test the platform and grow your portfolio at a pace that fits your financial goals.",
   },
   {
-    id: "assets",
-    question: "What can I actually trade?",
+    id: "withdrawals",
+    question: "How quickly can I withdraw my earnings?",
     answer:
-      "Crypto (BTC, ETH, SOL, and more), major forex pairs like EUR/USD and GBP/USD, and preferred stock for steadier, longer-horizon positions. Pricing for crypto and forex streams live from the terminal.",
+      "Withdrawals are processed smoothly and efficiently once your identity verification is complete. There are no arbitrary holding locks, giving you prompt access to your returns whenever you need them.",
   },
   {
-    id: "fees",
-    question: "Are there fees you're not telling me about?",
+    id: "support",
+    question: "Do you offer 24/7 technical support?",
     answer:
-      "No. Everything we charge is listed on this page in the Transparency section — a maker/taker trading fee, and that's it. No account minimums, no inactivity fees, no surprise charge when you withdraw.",
+      "Yes, our dedicated support team is available around the clock to assist you with any questions, account setups, or technical navigation you might need along the way.",
   },
   {
-    id: "withdraw",
-    question: "Can I withdraw whenever I want?",
+    id: "hidden-fees",
+    question: "Are there any hidden fees on trades?",
     answer:
-      "Yes, once your identity is verified. There's no lock-up period and no minimum holding time on your balance.",
-  },
-  {
-    id: "returns",
-    question: "Do you guarantee any kind of return?",
-    answer:
-      "No — and we'd be skeptical of any platform that does. Nobody can honestly promise you'll make money trading. What we can promise is a secure, transparent way to act on your own decisions, with real data and no hidden mechanics behind it.",
+      "Never. We believe in complete financial transparency. All costs, staking plans, and tier terms are laid out clearly so you will never encounter surprise charges or unexpected deductions.",
   },
 ];

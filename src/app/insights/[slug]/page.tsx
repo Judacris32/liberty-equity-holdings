@@ -84,14 +84,6 @@ export default function InsightArticlePage({
               </div>
             ))}
           </div>
-
-          <div className="mt-12 rounded-2xl glass-surface glass-border p-6">
-            <p className="text-justify text-sm leading-relaxed text-[rgb(var(--muted))]">
-              This piece is educational and general in nature, it isn&apos;t
-              personalized financial advice, and nothing here should be read
-              as a recommendation to buy or sell any specific asset.
-            </p>
-          </div>
         </article>
       </main>
       <Footer />

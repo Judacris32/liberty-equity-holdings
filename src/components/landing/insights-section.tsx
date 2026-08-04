@@ -9,29 +9,23 @@ import { INSIGHTS } from "@/lib/insights";
 export function InsightsSection() {
   return (
     <section id="insights" className="relative py-28">
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-4xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="mb-12 flex flex-wrap items-end justify-between gap-4"
+          className="mb-12 text-center"
         >
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-bull">
-              From the desk
-            </span>
-            <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-[rgb(var(--foreground))] sm:text-4xl">
-              A few things worth reading before your next trade
-            </h2>
-          </div>
-          <p className="max-w-sm text-sm leading-relaxed text-[rgb(var(--muted))]">
-            Plain-language notes on how markets actually behave, written
-            for people who trade, not people who study it for a living.
+          <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-[rgb(var(--foreground))] sm:text-4xl">
+            Actionable income ideas for shifting markets
+          </h2>
+          <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-[rgb(var(--muted))]">
+            Bottom-up analysis on mispriced convertibles, digital credits, and rare resources to help you uncover unique yield opportunities.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="flex justify-center">
           {INSIGHTS.map((insight, i) => (
             <motion.div
               key={insight.id}
@@ -39,17 +33,18 @@ export function InsightsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.5, delay: i * 0.08, ease: "easeOut" }}
+              className="w-full max-w-xl"
             >
               <Link
                 href={`/insights/${insight.id}`}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl glass-surface glass-border transition-colors hover:bg-white/[0.02]"
+                className="group flex w-full flex-col overflow-hidden rounded-2xl glass-surface glass-border transition-colors hover:bg-white/[0.02]"
               >
                 <div className="relative aspect-[16/10] w-full overflow-hidden">
                   <Image
                     src={insight.image}
                     alt={insight.imageAlt}
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, 600px"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
@@ -58,14 +53,14 @@ export function InsightsSection() {
                   </span>
                 </div>
 
-                <div className="flex flex-1 flex-col gap-3 p-6">
-                  <h3 className="text-lg font-semibold leading-snug text-[rgb(var(--foreground))]">
+                <div className="flex flex-1 flex-col gap-3 p-6 sm:p-8">
+                  <h3 className="text-xl font-semibold leading-snug text-[rgb(var(--foreground))]">
                     {insight.title}
                   </h3>
                   <p className="flex-1 text-sm leading-relaxed text-[rgb(var(--muted))]">
                     {insight.excerpt}
                   </p>
-                  <div className="mt-2 flex items-center justify-between border-t glass-border pt-4">
+                  <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-4">
                     <span className="flex items-center gap-3 text-xs text-[rgb(var(--muted))]">
                       <span>By {insight.author}</span>
                       <span className="flex items-center gap-1">

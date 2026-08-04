@@ -17,30 +17,56 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { logoutAction } from "@/lib/actions/auth";
+import { formatCurrency } from "@/lib/format-currency";
 
-const NAV_ITEMS = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Trading", href: "/dashboard/trading", icon: CandlestickChart },
-  { label: "Deposit", href: "/dashboard/deposit", icon: ArrowDownToLine },
-  { label: "Withdraw", href: "/dashboard/withdraw", icon: ArrowUpFromLine },
-  { label: "KYC Verification", href: "/dashboard/kyc", icon: ShieldCheck },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+const NAV_GROUPS = [
+  {
+    label: null,
+    items: [
+      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Trading", href: "/dashboard/trading", icon: CandlestickChart },
+    ],
+  },
+  {
+    label: "Asset Control",
+    items: [
+      { label: "Deposit Funds", href: "/dashboard/deposit", icon: ArrowDownToLine },
+      { label: "Withdraw", href: "/dashboard/withdraw", icon: ArrowUpFromLine },
+    ],
+  },
+  {
+    label: "Account",
+    items: [
+      { label: "KYC Verification", href: "/dashboard/kyc", icon: ShieldCheck },
+      { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    ],
+  },
 ];
 
 export function Sidebar({
   mobileOpen,
   onClose,
   isAdmin = false,
+  portfolioValue = 0,
 }: {
   mobileOpen: boolean;
   onClose: () => void;
   isAdmin?: boolean;
+  portfolioValue?: number;
 }) {
   const pathname = usePathname();
 
-  const navItems = isAdmin
-    ? [...NAV_ITEMS, { label: "Admin Review", href: "/admin/kyc", icon: ShieldAlert }]
-    : NAV_ITEMS;
+  const navGroups = isAdmin
+    ? [
+        ...NAV_GROUPS,
+        {
+          label: "Admin",
+          items: [
+            { label: "Admin Review", href: "/admin/kyc", icon: ShieldAlert },
+          ],
+        },
+      ]
+    : NAV_GROUPS;
 
   const content = (
     <div className="flex h-full flex-col">
@@ -55,44 +81,65 @@ export function Sidebar({
         </button>
       </div>
 
-      <nav className="flex-1 space-y-1 px-3">
-        {navItems.map((item) => {
-          const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(item.href);
+      {/* Portfolio value summary */}
+      <div className="px-4 pb-5">
+        <div className="rounded-2xl glass-surface glass-border p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--muted))]">
+            Portfolio Value
+          </p>
+          <p className="mt-1.5 text-2xl font-semibold tabular-nums text-[rgb(var(--foreground))]">
+            {formatCurrency(portfolioValue)}
+          </p>
+        </div>
+      </div>
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="sidebar-active-indicator"
-                  className="absolute inset-0 rounded-xl bg-bull/10 border border-bull/20"
-                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                />
-              )}
-              <item.icon
-                className={`relative z-10 h-4 w-4 ${
-                  isActive ? "text-bull" : "text-[rgb(var(--muted))]"
-                }`}
-              />
-              <span
-                className={`relative z-10 ${
-                  isActive
-                    ? "text-[rgb(var(--foreground))]"
-                    : "text-[rgb(var(--muted))]"
-                }`}
-              >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 space-y-6 px-3">
+        {navGroups.map((group, groupIndex) => (
+          <div key={group.label ?? `group-${groupIndex}`} className="space-y-1">
+            {group.label && (
+              <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--muted))]">
+                {group.label}
+              </p>
+            )}
+            {group.items.map((item) => {
+              const isActive =
+                item.href === "/dashboard"
+                  ? pathname === "/dashboard"
+                  : pathname.startsWith(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active-indicator"
+                      className="absolute inset-0 rounded-xl bg-bull/10 border border-bull/20"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                  <item.icon
+                    className={`relative z-10 h-4 w-4 ${
+                      isActive ? "text-bull" : "text-[rgb(var(--muted))]"
+                    }`}
+                  />
+                  <span
+                    className={`relative z-10 ${
+                      isActive
+                        ? "text-[rgb(var(--foreground))]"
+                        : "text-[rgb(var(--muted))]"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       <div className="border-t glass-border p-3">

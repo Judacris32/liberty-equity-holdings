@@ -8,11 +8,13 @@ export function DashboardShell({
   kycStatus,
   userEmail,
   isAdmin = false,
+  portfolioValue = 0,
   children,
 }: {
   kycStatus: "unverified" | "pending" | "verified";
   userEmail: string;
   isAdmin?: boolean;
+  portfolioValue?: number;
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -23,6 +25,7 @@ export function DashboardShell({
         mobileOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
         isAdmin={isAdmin}
+        portfolioValue={portfolioValue}
       />
 
       <div className="md:pl-64">
