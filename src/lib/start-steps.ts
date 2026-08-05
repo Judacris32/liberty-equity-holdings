@@ -1,7 +1,7 @@
 import { Layers, ShieldCheck, LineChart } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-export type PricingPlan = {
+export type StartStep = {
   id: string;
   icon: LucideIcon;
   title: string;
@@ -12,7 +12,7 @@ export type PricingPlan = {
   imageAlt: string;
 };
 
-export const PRICING_PLANS: PricingPlan[] = [
+export const START_STEPS: StartStep[] = [
   {
     id: "basic",
     icon: ShieldCheck,
@@ -49,7 +49,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     title: "Business Plan",
     description: "$100,000 - $1,000,000",
     points: [
-      "Secure Asset Custody",
+      "SecureAsset Custody",
       "Instant Interest Accrual",
       "Auto-Compound Options",
     ],
