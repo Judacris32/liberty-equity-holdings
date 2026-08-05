@@ -35,7 +35,7 @@ export function HowItWorksSection() {
               transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
               className="group flex flex-col overflow-hidden rounded-2xl glass-surface glass-border transition-colors hover:bg-white/[0.02]"
             >
-              {/* Image header with step number */}
+              {/* Image header with plan id badge */}
               <div className="relative aspect-[16/10] w-full overflow-hidden">
                 <Image
                   src={step.image}
@@ -46,8 +46,8 @@ export function HowItWorksSection() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
 
-                <span className="absolute left-4 top-4 font-mono text-xs font-semibold text-white/70">
-                  {step.step}
+                <span className="absolute left-4 top-4 font-mono text-xs font-semibold uppercase tracking-wider text-white/70">
+                  {step.id}
                 </span>
 
                 <div className="absolute bottom-3 left-4 flex h-10 w-10 items-center justify-center rounded-xl bg-bull/20 backdrop-blur-sm">
