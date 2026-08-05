@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import { getAccount } from "@/lib/queries/account";
 import { getRecentTransactions } from "@/lib/queries/transactions";
 import { getRecentOrders } from "@/lib/queries/orders";
@@ -22,10 +23,13 @@ function greeting() {
 }
 
 export default async function DashboardOverviewPage() {
-  const [account, transactions, orders] = await Promise.all([
+  const supabase = await createClient();
+
+  const [account, transactions, orders, { data: userData }] = await Promise.all([
     getAccount(),
     getRecentTransactions(),
     getRecentOrders(),
+    supabase.auth.getUser(),
   ]);
 
   if (!account) {
@@ -61,8 +65,22 @@ export default async function DashboardOverviewPage() {
     );
   }
 
+  // Prefer the real name given at sign-up. Fall back to a cleaned-up
+  // version of the email's local part only if no name was ever set.
+  const fullName = userData?.user?.user_metadata?.full_name as string | undefined;
+  const firstName = fullName?.trim().split(/\s+/)[0];
+
   const displayName =
-    account.email?.split("@")[0].replace(/[._-]/g, " ") ?? "there";
+    firstName ||
+    (account?.email
+      ? account.email
+          .split("@")[0]
+          .replace(/[._-]+/g, " ")
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ")
+      : "there");
 
   return (
     <div className="flex flex-col gap-6">

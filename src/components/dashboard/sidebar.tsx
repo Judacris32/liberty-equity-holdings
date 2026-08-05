@@ -93,7 +93,7 @@ export function Sidebar({
         </div>
       </div>
 
-      <nav className="flex-1 space-y-6 px-3">
+      <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-3">
         {navGroups.map((group, groupIndex) => (
           <div key={group.label ?? `group-${groupIndex}`} className="space-y-1">
             {group.label && (
