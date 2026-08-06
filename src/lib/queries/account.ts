@@ -9,6 +9,10 @@ export type Account = {
   total_withdrawals: string;
   kyc_status: "unverified" | "pending" | "verified";
   is_admin: boolean;
+  account_type: "basic" | "standard" | "business";
+  phone: string | null;
+  date_of_birth: string | null;
+  country: string | null;
 };
 
 /**

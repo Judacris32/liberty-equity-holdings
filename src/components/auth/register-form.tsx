@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { registerAction } from "@/lib/actions/auth";
+import { ACCOUNT_TYPES } from "@/lib/account-types";
+import { COUNTRIES } from "@/lib/countries";
 import { FormField } from "./form-field";
 
 export function RegisterForm() {
@@ -16,17 +18,26 @@ export function RegisterForm() {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     mode: "onBlur",
+    defaultValues: { accountType: "basic" },
   });
+
+  const selectedAccountType = watch("accountType");
 
   const onSubmit = (data: RegisterInput) => {
     setServerError(null);
     const formData = new FormData();
     formData.set("fullName", data.fullName);
     formData.set("email", data.email);
+    formData.set("phone", data.phone);
+    formData.set("dateOfBirth", data.dateOfBirth);
+    formData.set("country", data.country);
+    formData.set("accountType", data.accountType);
     formData.set("password", data.password);
     formData.set("confirmPassword", data.confirmPassword);
     formData.set("agreeToTerms", data.agreeToTerms ? "on" : "");
@@ -59,6 +70,88 @@ export function RegisterForm() {
         error={errors.email?.message}
         {...register("email")}
       />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <FormField
+          label="Phone number"
+          type="tel"
+          placeholder="+1 555 123 4567"
+          autoComplete="tel"
+          error={errors.phone?.message}
+          {...register("phone")}
+        />
+
+        <FormField
+          label="Date of birth"
+          type="date"
+          autoComplete="bday"
+          error={errors.dateOfBirth?.message}
+          {...register("dateOfBirth")}
+        />
+
+        <div>
+          <label className="mb-1.5 block text-xs font-medium text-[rgb(var(--muted))]">
+            Country
+          </label>
+          <select
+            {...register("country")}
+            defaultValue=""
+            className="w-full rounded-xl glass-surface glass-border border px-4 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none transition-colors focus:border-bull/50"
+          >
+            <option value="" disabled>
+              Select your country
+            </option>
+            {COUNTRIES.map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
+          {errors.country && (
+            <p className="mt-1.5 text-xs text-bear">{errors.country.message}</p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label className="mb-1.5 block text-xs font-medium text-[rgb(var(--muted))]">
+          Account type
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          {ACCOUNT_TYPES.map((type) => {
+            const active = selectedAccountType === type.value;
+            return (
+              <button
+                key={type.value}
+                type="button"
+                onClick={() => setValue("accountType", type.value, { shouldValidate: true })}
+                className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-center transition-colors ${
+                  active
+                    ? "border-bull/40 bg-bull/10"
+                    : "glass-border glass-surface hover:bg-white/[0.03]"
+                }`}
+              >
+                <type.icon
+                  className={`h-4 w-4 ${active ? "text-bull" : "text-[rgb(var(--muted))]"}`}
+                />
+                <span
+                  className={`text-xs font-semibold ${
+                    active ? "text-bull" : "text-[rgb(var(--foreground))]"
+                  }`}
+                >
+                  {type.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-1.5 text-xs text-[rgb(var(--muted))]">
+          {ACCOUNT_TYPES.find((t) => t.value === selectedAccountType)?.description}
+        </p>
+        {errors.accountType && (
+          <p className="mt-1 text-xs text-bear">{errors.accountType.message}</p>
+        )}
+      </div>
 
       <FormField
         label="Password"

@@ -47,6 +47,10 @@ export async function registerAction(
   const parsed = registerSchema.safeParse({
     fullName: formData.get("fullName"),
     email: formData.get("email"),
+    phone: formData.get("phone"),
+    dateOfBirth: formData.get("dateOfBirth"),
+    country: formData.get("country"),
+    accountType: formData.get("accountType"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
     agreeToTerms: formData.get("agreeToTerms") === "on",
@@ -66,6 +70,10 @@ export async function registerAction(
     options: {
       data: {
         full_name: parsed.data.fullName,
+        phone: parsed.data.phone,
+        date_of_birth: parsed.data.dateOfBirth,
+        country: parsed.data.country,
+        account_type: parsed.data.accountType,
       },
     },
   });

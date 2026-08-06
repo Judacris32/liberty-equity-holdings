@@ -5,15 +5,19 @@ import Link from "next/link";
 import { Menu, ShieldAlert, ShieldCheck, Clock } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LivePriceStream } from "./live-price-stream";
+import { NotificationBell } from "./notification-bell";
+import type { ActivityNotification } from "@/lib/queries/activity";
 
 export function DashboardHeader({
   onMenuClick,
   kycStatus,
   userEmail,
+  notifications,
 }: {
   onMenuClick: () => void;
   kycStatus: "unverified" | "pending" | "verified";
   userEmail: string;
+  notifications: ActivityNotification[];
 }) {
   const initial = (userEmail?.[0] ?? "?").toUpperCase();
 
@@ -79,6 +83,8 @@ export function DashboardHeader({
           )}
 
           <ThemeToggle />
+
+          <NotificationBell notifications={notifications} />
 
           <div
             title={userEmail}

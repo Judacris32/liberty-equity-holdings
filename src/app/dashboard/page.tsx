@@ -85,9 +85,22 @@ export default async function DashboardOverviewPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold capitalize tracking-tight text-[rgb(var(--foreground))] sm:text-3xl">
-          {greeting()}, {displayName}!
-        </h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-semibold capitalize tracking-tight text-[rgb(var(--foreground))] sm:text-3xl">
+            {greeting()}, {displayName}!
+          </h1>
+          <span
+            className={`rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${
+              account.account_type === "business"
+                ? "bg-violet-400/10 text-violet-400"
+                : account.account_type === "standard"
+                  ? "bg-sky-400/10 text-sky-400"
+                  : "bg-white/[0.06] text-[rgb(var(--muted))]"
+            }`}
+          >
+            {account.account_type}
+          </span>
+        </div>
         <div className="mt-2 flex items-center gap-2">
           <span className="text-sm text-[rgb(var(--muted))]">
             Account Status:

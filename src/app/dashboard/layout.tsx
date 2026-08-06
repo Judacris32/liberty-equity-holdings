@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAccount } from "@/lib/queries/account";
+import { getRecentActivity } from "@/lib/queries/activity";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export default async function DashboardLayout({
@@ -19,7 +20,10 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const account = await getAccount();
+  const [account, notifications] = await Promise.all([
+    getAccount(),
+    getRecentActivity(),
+  ]);
 
   // Portfolio value = what's available plus what trading has returned.
   const portfolioValue = account
@@ -32,6 +36,7 @@ export default async function DashboardLayout({
       userEmail={user.email ?? ""}
       isAdmin={account?.is_admin ?? false}
       portfolioValue={portfolioValue}
+      notifications={notifications}
     >
       {children}
     </DashboardShell>
