@@ -41,7 +41,6 @@ export function WithdrawForm({ availableBalance }: { availableBalance: number })
         </div>
         <div>
           <h3 className="text-sm font-semibold text-[rgb(var(--foreground))]">Withdraw Funds</h3>
-          <p className="text-xs text-[rgb(var(--muted))]">Simulated for demo purposes</p>
         </div>
       </div>
 

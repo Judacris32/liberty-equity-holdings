@@ -68,3 +68,54 @@ export async function getPendingKycSubmissions(): Promise<PendingKycSubmission[]
 
   return results;
 }
+
+export type PendingDepositRequest = {
+  id: string;
+  user_id: string;
+  amount: string;
+  method: "crypto" | "bank";
+  proof_storage_path: string;
+  created_at: string;
+  signedUrl: string | null;
+  userEmail: string;
+};
+
+/**
+ * Fetches all pending deposit requests for the admin review queue, along
+ * with a short-lived signed URL for each proof-of-payment file.
+ */
+export async function getPendingDepositRequests(): Promise<PendingDepositRequest[]> {
+  const supabase = await createClient();
+
+  const { data: requests } = await supabase
+    .from("deposit_requests")
+    .select("id, user_id, amount, method, proof_storage_path, created_at")
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (!requests || requests.length === 0) return [];
+
+  const userIds = requests.map((r) => r.user_id);
+  const { data: accounts } = await supabase
+    .from("accounts")
+    .select("user_id, email")
+    .in("user_id", userIds);
+
+  const emailByUserId = new Map(accounts?.map((a) => [a.user_id, a.email]) ?? []);
+
+  const results: PendingDepositRequest[] = [];
+
+  for (const request of requests) {
+    const { data: signed } = await supabase.storage
+      .from("deposit-proofs")
+      .createSignedUrl(request.proof_storage_path, 60 * 5); // 5 minute link
+
+    results.push({
+      ...request,
+      signedUrl: signed?.signedUrl ?? null,
+      userEmail: emailByUserId.get(request.user_id) ?? request.user_id,
+    });
+  }
+
+  return results;
+}

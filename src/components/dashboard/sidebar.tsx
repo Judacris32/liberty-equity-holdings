@@ -11,6 +11,7 @@ import {
   ArrowUpFromLine,
   ShieldCheck,
   ShieldAlert,
+  Banknote,
   Settings,
   LogOut,
   X,
@@ -62,7 +63,8 @@ export function Sidebar({
         {
           label: "Admin",
           items: [
-            { label: "Admin Review", href: "/admin/kyc", icon: ShieldAlert },
+            { label: "KYC Review", href: "/admin/kyc", icon: ShieldAlert },
+            { label: "Deposit Review", href: "/admin/deposits", icon: Banknote },
           ],
         },
       ]

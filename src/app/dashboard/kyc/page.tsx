@@ -45,8 +45,8 @@ export default async function KycPage() {
               Your document is under review
             </p>
             <p className="max-w-sm text-xs text-[rgb(var(--muted))]">
-              This usually takes 1–2 business days in a live environment. In
-              this demo, status changes are simulated for review purposes.
+              This typically takes 1–2 business days. We&apos;ll update your
+              verification status as soon as the review is complete.
             </p>
           </div>
         )}
