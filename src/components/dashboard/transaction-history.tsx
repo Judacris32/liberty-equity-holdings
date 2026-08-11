@@ -49,6 +49,11 @@ export function TransactionHistory({ transactions }: { transactions: Transaction
                     minute: "2-digit",
                   })}
                 </p>
+                {tx.note && (
+                  <p className="mt-0.5 max-w-[220px] truncate text-[10px] italic text-[rgb(var(--muted))]">
+                    {tx.note}
+                  </p>
+                )}
               </div>
             </div>
             <span

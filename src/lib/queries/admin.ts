@@ -119,3 +119,50 @@ export async function getPendingDepositRequests(): Promise<PendingDepositRequest
 
   return results;
 }
+
+export type PendingWithdrawalRequest = {
+  id: string;
+  user_id: string;
+  amount: string;
+  method: "bank" | "crypto";
+  bank_account_name: string | null;
+  bank_account_number: string | null;
+  bank_name: string | null;
+  bank_swift: string | null;
+  crypto_address: string | null;
+  crypto_network: string | null;
+  created_at: string;
+  userEmail: string;
+};
+
+/**
+ * Fetches all pending withdrawal requests for the admin review queue,
+ * with the destination details attached (bank details or crypto address)
+ * so the admin can actually see where funds need to go.
+ */
+export async function getPendingWithdrawalRequests(): Promise<PendingWithdrawalRequest[]> {
+  const supabase = await createClient();
+
+  const { data: requests } = await supabase
+    .from("withdrawal_requests")
+    .select(
+      "id, user_id, amount, method, bank_account_name, bank_account_number, bank_name, bank_swift, crypto_address, crypto_network, created_at"
+    )
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (!requests || requests.length === 0) return [];
+
+  const userIds = requests.map((r) => r.user_id);
+  const { data: accounts } = await supabase
+    .from("accounts")
+    .select("user_id, email")
+    .in("user_id", userIds);
+
+  const emailByUserId = new Map(accounts?.map((a) => [a.user_id, a.email]) ?? []);
+
+  return requests.map((request) => ({
+    ...request,
+    userEmail: emailByUserId.get(request.user_id) ?? request.user_id,
+  }));
+}

@@ -1,15 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 
-export type Transaction = {
+export type WithdrawalRequest = {
   id: string;
-  type: "deposit" | "withdrawal";
   amount: string;
-  status: "completed" | "pending" | "failed";
-  note: string | null;
+  method: "bank" | "crypto";
+  status: "pending" | "approved" | "rejected";
   created_at: string;
 };
 
-export async function getRecentTransactions(limit = 10): Promise<Transaction[]> {
+export async function getMyWithdrawalRequests(limit = 10): Promise<WithdrawalRequest[]> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -18,11 +17,11 @@ export async function getRecentTransactions(limit = 10): Promise<Transaction[]> 
   if (!user) return [];
 
   const { data } = await supabase
-    .from("transactions")
-    .select("id, type, amount, status, note, created_at")
+    .from("withdrawal_requests")
+    .select("id, amount, method, status, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  return (data as Transaction[]) ?? [];
+  return (data as WithdrawalRequest[]) ?? [];
 }

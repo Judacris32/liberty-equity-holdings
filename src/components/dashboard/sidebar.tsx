@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   ShieldAlert,
   Banknote,
+  Wallet2,
   Settings,
   LogOut,
   X,
@@ -65,6 +66,8 @@ export function Sidebar({
           items: [
             { label: "KYC Review", href: "/admin/kyc", icon: ShieldAlert },
             { label: "Deposit Review", href: "/admin/deposits", icon: Banknote },
+            { label: "Withdrawal Review", href: "/admin/withdrawals", icon: ArrowUpFromLine },
+            { label: "Balance Adjustment", href: "/admin/balance", icon: Wallet2 },
           ],
         },
       ]

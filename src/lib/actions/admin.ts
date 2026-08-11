@@ -175,3 +175,99 @@ export async function rejectDepositAction(
     return { error: "You are not authorized to perform this action." };
   }
 }
+
+export async function approveWithdrawalAction(
+  _prevState: AdminActionState,
+  formData: FormData
+): Promise<AdminActionState> {
+  const requestId = formData.get("requestId") as string;
+  const targetUserId = formData.get("userId") as string;
+  const amount = parseFloat(formData.get("amount") as string);
+
+  if (!requestId || !targetUserId || !amount) {
+    return { error: "Missing request details." };
+  }
+
+  try {
+    const supabase = await requireAdmin();
+
+    const { data: account, error: fetchError } = await supabase
+      .from("accounts")
+      .select("available_balance, total_withdrawals")
+      .eq("user_id", targetUserId)
+      .single();
+
+    if (fetchError || !account) return { error: "Could not load that user's account." };
+
+    // Re-check sufficiency at approval time — the real safety net, since
+    // the balance may have moved since the request was submitted.
+    if (parseFloat(account.available_balance) < amount) {
+      return { error: "This user's balance is no longer sufficient for this withdrawal." };
+    }
+
+    const newBalance =
+      Math.round((parseFloat(account.available_balance) - amount) * 100) / 100;
+    const newWithdrawals =
+      Math.round((parseFloat(account.total_withdrawals) + amount) * 100) / 100;
+
+    const { error: accountError } = await supabase
+      .from("accounts")
+      .update({
+        available_balance: newBalance,
+        total_withdrawals: newWithdrawals,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", targetUserId);
+
+    if (accountError) return { error: "Failed to update account balance." };
+
+    const { error: requestError } = await supabase
+      .from("withdrawal_requests")
+      .update({ status: "approved", reviewed_at: new Date().toISOString() })
+      .eq("id", requestId);
+
+    if (requestError) return { error: "Failed to update the withdrawal request." };
+
+    await supabase.from("transactions").insert({
+      user_id: targetUserId,
+      type: "withdrawal",
+      amount,
+      method: "manual_review",
+      status: "completed",
+    });
+
+    revalidatePath("/admin/withdrawals");
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/withdraw");
+    return { error: null, success: true };
+  } catch {
+    return { error: "You are not authorized to perform this action." };
+  }
+}
+
+export async function rejectWithdrawalAction(
+  _prevState: AdminActionState,
+  formData: FormData
+): Promise<AdminActionState> {
+  const requestId = formData.get("requestId") as string;
+
+  if (!requestId) {
+    return { error: "Missing request details." };
+  }
+
+  try {
+    const supabase = await requireAdmin();
+
+    const { error } = await supabase
+      .from("withdrawal_requests")
+      .update({ status: "rejected", reviewed_at: new Date().toISOString() })
+      .eq("id", requestId);
+
+    if (error) return { error: "Failed to update the withdrawal request." };
+
+    revalidatePath("/admin/withdrawals");
+    return { error: null, success: true };
+  } catch {
+    return { error: "You are not authorized to perform this action." };
+  }
+}

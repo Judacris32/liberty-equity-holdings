@@ -143,9 +143,7 @@ export function DepositAddressCard({
       <div className="mt-4 flex items-start gap-2 rounded-xl bg-bull/[0.06] p-3">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-bull" />
         <p className="text-[11px] leading-relaxed text-[rgb(var(--muted))]">
-          Demo addresses for display purposes. Deposits on this platform are
-          simulated using the amount form below — sending funds here won&apos;t
-          credit your account.
+          Ensure you are using the correct network (e.g., ERC-20, TRC-20). Sending unsupported assets or using the wrong network may result in permanent loss.
         </p>
       </div>
     </div>
