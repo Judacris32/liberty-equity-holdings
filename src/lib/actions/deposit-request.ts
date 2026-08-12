@@ -43,6 +43,7 @@ export async function submitDepositRequest(
     .upload(storagePath, proof, { upsert: false });
 
   if (uploadError) {
+    console.error("Deposit proof upload failed:", uploadError.message);
     return { error: "Upload failed. Please try again." };
   }
 
@@ -55,6 +56,7 @@ export async function submitDepositRequest(
   });
 
   if (insertError) {
+    console.error("Deposit request insert failed:", insertError.message);
     return { error: "Could not submit your deposit request. Please try again." };
   }
 

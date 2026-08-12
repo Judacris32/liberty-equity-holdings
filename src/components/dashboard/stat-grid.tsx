@@ -19,7 +19,7 @@ export function StatGrid({
       label: "Total Profit",
       value: formatCurrency(account.total_profit),
       icon: TrendingUp,
-      href: "/dashboard/trading",
+      href: "/dashboard/withdraw",
       tint: "bg-bull/10",
       iconColor: "text-bull",
     },

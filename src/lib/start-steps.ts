@@ -47,7 +47,7 @@ export const START_STEPS: StartStep[] = [
     id: "business",
     icon: LineChart,
     title: "Business Plan",
-    description: "$100,000 - $1,000,000",
+    description: "$65,000 - $750,000",
     points: [
       "SecureAsset Custody",
       "Instant Interest Accrual",
