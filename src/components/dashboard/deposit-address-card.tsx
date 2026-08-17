@@ -3,11 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check, Bitcoin, Landmark, Info } from "lucide-react";
-import {
-  CRYPTO_DEPOSIT_OPTIONS,
-  BANK_TRANSFER_DETAILS,
-  type CryptoDepositOption,
-} from "@/lib/deposit-addresses";
+import type { CryptoDepositOption, BankTransferDetails } from "@/lib/queries/deposit-settings";
 
 function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = React.useState(false);
@@ -79,10 +75,27 @@ function CryptoAddressRow({ option }: { option: CryptoDepositOption }) {
 export function DepositAddressCard({
   tab,
   onTabChange,
+  cryptoOptions,
+  bankDetails,
 }: {
   tab: "crypto" | "bank";
   onTabChange: (tab: "crypto" | "bank") => void;
+  cryptoOptions: CryptoDepositOption[];
+  bankDetails: BankTransferDetails | null;
 }) {
+  const bankFields = bankDetails
+    ? [
+        { label: "Account Name", value: bankDetails.account_name },
+        { label: "Account Number", value: bankDetails.account_number },
+        { label: "Bank Name", value: bankDetails.bank_name },
+        { label: "SWIFT / BIC", value: bankDetails.swift_bic },
+        ...(bankDetails.routing_number
+          ? [{ label: "Routing Number", value: bankDetails.routing_number }]
+          : []),
+        ...(bankDetails.iban ? [{ label: "IBAN", value: bankDetails.iban }] : []),
+      ]
+    : [];
+
   return (
     <div className="rounded-2xl glass-surface glass-border p-5">
       <div className="flex items-center justify-between gap-3">
@@ -118,32 +131,46 @@ export function DepositAddressCard({
       </div>
 
       <div className="mt-4 flex flex-col gap-2.5">
-        {tab === "crypto"
-          ? CRYPTO_DEPOSIT_OPTIONS.map((option) => (
+        {tab === "crypto" ? (
+          cryptoOptions.length > 0 ? (
+            cryptoOptions.map((option) => (
               <CryptoAddressRow key={option.id} option={option} />
             ))
-          : BANK_TRANSFER_DETAILS.map((field) => (
-              <div
-                key={field.label}
-                className="flex items-center justify-between gap-3 rounded-xl glass-surface glass-border border p-3.5"
-              >
-                <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-wide text-[rgb(var(--muted))]">
-                    {field.label}
-                  </p>
-                  <p className="mt-0.5 truncate text-sm font-medium text-[rgb(var(--foreground))]">
-                    {field.value}
-                  </p>
-                </div>
-                <CopyButton value={field.value} />
+          ) : (
+            <p className="py-4 text-center text-xs text-[rgb(var(--muted))]">
+              No crypto deposit options are available right now.
+            </p>
+          )
+        ) : bankFields.length > 0 ? (
+          bankFields.map((field) => (
+            <div
+              key={field.label}
+              className="flex items-center justify-between gap-3 rounded-xl glass-surface glass-border border p-3.5"
+            >
+              <div className="min-w-0">
+                <p className="text-[10px] uppercase tracking-wide text-[rgb(var(--muted))]">
+                  {field.label}
+                </p>
+                <p className="mt-0.5 truncate text-sm font-medium text-[rgb(var(--foreground))]">
+                  {field.value}
+                </p>
               </div>
-            ))}
+              <CopyButton value={field.value} />
+            </div>
+          ))
+        ) : (
+          <p className="py-4 text-center text-xs text-[rgb(var(--muted))]">
+            Bank transfer details are not available right now.
+          </p>
+        )}
       </div>
 
       <div className="mt-4 flex items-start gap-2 rounded-xl bg-bull/[0.06] p-3">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-bull" />
         <p className="text-[11px] leading-relaxed text-[rgb(var(--muted))]">
-          Ensure you are using the correct network (e.g., ERC-20, TRC-20). Sending unsupported assets or using the wrong network may result in permanent loss.
+          Ensure you are using the correct network (e.g., ERC-20, TRC-20).
+          Sending unsupported assets or using the wrong network may result in
+          permanent loss.
         </p>
       </div>
     </div>

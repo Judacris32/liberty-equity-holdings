@@ -1,6 +1,7 @@
 import { getAccount } from "@/lib/queries/account";
 import { getRecentTransactions } from "@/lib/queries/transactions";
 import { getMyDepositRequests } from "@/lib/queries/deposit-requests";
+import { getCryptoDepositOptions, getBankTransferDetails } from "@/lib/queries/deposit-settings";
 import { DepositFlow } from "@/components/dashboard/deposit-flow";
 import { DepositRequestStatusList } from "@/components/dashboard/deposit-request-status-list";
 import { TransactionHistory } from "@/components/dashboard/transaction-history";
@@ -11,6 +12,11 @@ export default async function DepositPage() {
   const transactions = await getRecentTransactions();
   const depositRequests = await getMyDepositRequests();
   const isVerified = account?.kyc_status === "verified";
+
+  const [cryptoOptions, bankDetails] = await Promise.all([
+    getCryptoDepositOptions(),
+    getBankTransferDetails(),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -23,7 +29,7 @@ export default async function DepositPage() {
 
       {isVerified ? (
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_1.2fr]">
-          <DepositFlow />
+          <DepositFlow cryptoOptions={cryptoOptions} bankDetails={bankDetails} />
           <div className="flex flex-col gap-5">
             <DepositRequestStatusList requests={depositRequests} />
             <TransactionHistory transactions={transactions} />

@@ -13,6 +13,7 @@ import {
   ShieldAlert,
   Banknote,
   Wallet2,
+  Settings2,
   Settings,
   LogOut,
   X,
@@ -68,6 +69,7 @@ export function Sidebar({
             { label: "Deposit Review", href: "/admin/deposits", icon: Banknote },
             { label: "Withdrawal Review", href: "/admin/withdrawals", icon: ArrowUpFromLine },
             { label: "Balance Adjustment", href: "/admin/balance", icon: Wallet2 },
+            { label: "Deposit Settings", href: "/admin/deposit-settings", icon: Settings2 },
           ],
         },
       ]
@@ -75,15 +77,8 @@ export function Sidebar({
 
   const content = (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between px-5 py-6">
+      <div className="px-4 pb-6 pt-5">
         <Logo />
-        <button
-          onClick={onClose}
-          aria-label="Close menu"
-          className="flex h-8 w-8 items-center justify-center rounded-full glass-surface glass-border md:hidden"
-        >
-          <X className="h-4 w-4" />
-        </button>
       </div>
 
       {/* Portfolio value summary */}
@@ -151,7 +146,7 @@ export function Sidebar({
         <form action={logoutAction}>
           <button
             type="submit"
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[rgb(var(--muted))] transition-colors hover:bg-bear/10 hover:text-bear"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[rgb(var(--muted))] transition-colors hover:bg-white/[0.04] hover:text-[rgb(var(--foreground))]"
           >
             <LogOut className="h-4 w-4" />
             Log out
@@ -164,27 +159,35 @@ export function Sidebar({
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 glass-surface glass-border border-r md:block">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r glass-border glass-surface md:block">
         {content}
       </aside>
 
-      {/* Mobile sidebar overlay */}
+      {/* Mobile sidebar */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
+        <>
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={onClose}
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            aria-hidden
           />
           <motion.aside
-            initial={{ x: -280 }}
+            initial={{ x: "-100%" }}
             animate={{ x: 0 }}
-            exit={{ x: -280 }}
-            transition={{ type: "spring", stiffness: 300, damping: 32 }}
-            className="absolute inset-y-0 left-0 w-72 glass-surface glass-border border-r"
+            exit={{ x: "-100%" }}
+            transition={{ type: "tween", duration: 0.25 }}
+            className="fixed inset-y-0 left-0 z-50 w-64 glass-surface md:hidden"
           >
+            <button
+              onClick={onClose}
+              aria-label="Close menu"
+              className="absolute right-3 top-4 flex h-8 w-8 items-center justify-center rounded-full glass-surface glass-border"
+            >
+              <X className="h-4 w-4" />
+            </button>
             {content}
           </motion.aside>
-        </div>
+        </>
       )}
     </>
   );
