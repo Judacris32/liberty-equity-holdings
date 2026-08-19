@@ -23,7 +23,13 @@ export function TradingViewTimeline() {
     script.async = true;
     script.innerHTML = JSON.stringify({
       feedMode: "all_symbols",
-      isTransparent: true,
+      // Turned off for dark mode: TradingView's Timeline widget renders
+      // headline text in a low-contrast gray designed to sit on ITS OWN
+      // solid dark background. With isTransparent on, that gray blends
+      // into our page background and becomes nearly unreadable. Giving
+      // the widget its own solid background fixes contrast at the cost
+      // of a hard edge instead of blending into the page.
+      isTransparent: resolvedTheme === "light",
       displayMode: "regular",
       width: "100%",
       height: 500,

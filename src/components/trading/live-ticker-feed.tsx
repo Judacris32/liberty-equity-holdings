@@ -58,7 +58,7 @@ export function LiveTickerFeed({ symbol }: { symbol: TradableSymbol }) {
     return (
       <div className="flex items-center gap-2 rounded-xl glass-surface glass-border px-4 py-3 text-xs text-[rgb(var(--muted))]">
         Live tick streaming isn&apos;t available for {symbol.label} in this
-        demo — forex data is shown via the chart above.
+        demo, forex data is shown via the chart above.
       </div>
     );
   }
