@@ -8,29 +8,43 @@ import { MOCK_PROOF_EVENTS, type ProofEvent } from "@/lib/mock-proof-events";
 const DISPLAY_MS = 4500;
 const GAP_MS = 3500;
 
+// Sections where the toast is safe to show without colliding with other
+// bottom-left content. Add more section IDs here as you confirm they're safe.
+const SAFE_ZONE_IDS = ["hero-section", "how-does-it-work"];
+
 export function ProofToast() {
   const [index, setIndex] = React.useState(0);
   const [visible, setVisible] = React.useState(false);
-  const [inHeroView, setInHeroView] = React.useState(true);
+  const [inSafeZone, setInSafeZone] = React.useState(true);
 
-  // Only cycle/show the toast while the hero section is actually in view.
-  // Without this, the fixed-position toast collides with content further
-  // down the page (table rows, cards, etc. that also sit near the
-  // bottom-left of the viewport).
   React.useEffect(() => {
-    const heroEl = document.getElementById("hero-section");
-    if (!heroEl) return;
+    const targets = SAFE_ZONE_IDS
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (targets.length === 0) return;
+
+    // One observer can watch multiple targets. We track each target's
+    // intersecting state and consider ourselves "in a safe zone" if ANY
+    // of them is currently visible.
+    const intersecting = new Map<Element, boolean>();
 
     const observer = new IntersectionObserver(
-      ([entry]) => setInHeroView(entry.isIntersecting),
+      (entries) => {
+        entries.forEach((entry) => {
+          intersecting.set(entry.target, entry.isIntersecting);
+        });
+        setInSafeZone(Array.from(intersecting.values()).some(Boolean));
+      },
       { threshold: 0.15 }
     );
-    observer.observe(heroEl);
+
+    targets.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
   React.useEffect(() => {
-    if (!inHeroView) {
+    if (!inSafeZone) {
       setVisible(false);
       return;
     }
@@ -49,7 +63,6 @@ export function ProofToast() {
       }, DISPLAY_MS);
     };
 
-    // Initial delay before first toast appears
     const initialDelay = setTimeout(cycle, 1500);
 
     return () => {
@@ -57,14 +70,14 @@ export function ProofToast() {
       clearTimeout(showTimer);
       clearTimeout(hideTimer);
     };
-  }, [inHeroView]);
+  }, [inSafeZone]);
 
   const event: ProofEvent = MOCK_PROOF_EVENTS[index];
 
   return (
     <div className="pointer-events-none fixed bottom-6 left-6 z-40 hidden sm:block">
       <AnimatePresence>
-        {visible && inHeroView && (
+        {visible && inSafeZone && (
           <motion.div
             key={event.id}
             initial={{ opacity: 0, x: -24, scale: 0.96 }}
