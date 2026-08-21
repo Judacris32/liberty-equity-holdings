@@ -25,10 +25,14 @@ export default async function DashboardLayout({
     getRecentActivity(),
   ]);
 
-  // Portfolio value = what's available plus what trading has returned.
-  const portfolioValue = account
-    ? parseFloat(account.available_balance) + parseFloat(account.total_profit)
-    : 0;
+  // Portfolio Value and Available Balance are intentionally the same
+  // number. available_balance is the one real spendable figure on the
+  // account — total_profit is a separate running stat, not a second pot
+  // of money sitting on top of it (any real profit already gets folded
+  // into available_balance the moment it's earned). Adding them together
+  // here would double-count that money and show a bigger number than
+  // what's actually in the account.
+  const portfolioValue = account ? parseFloat(account.available_balance) : 0;
 
   return (
     <DashboardShell
