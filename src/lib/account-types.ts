@@ -28,6 +28,6 @@ export const ACCOUNT_TYPES: AccountTypeOption[] = [
     value: "business",
     label: "Business",
     icon: Building2,
-    description: "$100,000 - $1,000,000",
+    description: "$650,000 - $750,000",
   },
 ];
