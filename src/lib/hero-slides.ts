@@ -37,7 +37,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     headline: "Markets move constantly.",
     headlineAccent: "Your data should too.",
     subcopy:
-      "Crypto and forex prices stream directly into the terminal in real time — no refreshing, no delays.",
+      "Crypto and forex prices stream directly into the terminal in real time, no refreshing, no delays.",
     primaryCta: { label: "Explore the Terminal", href: "/register" },
     secondaryCta: { label: "See How It Works", href: "#trading" },
   },
@@ -74,7 +74,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     headline: "Less clutter.",
     headlineAccent: "More clarity.",
     subcopy:
-      "Create an account and see the full platform for yourself — no unnecessary steps.",
+      "Create an account and see the full platform for yourself, no unnecessary steps.",
     primaryCta: { label: "Get Started", href: "/register" },
   },
 ];

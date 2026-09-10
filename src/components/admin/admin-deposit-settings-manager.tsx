@@ -17,6 +17,7 @@ import {
   toggleCryptoOptionActiveAction,
   deleteCryptoOptionAction,
   updateBankDetailsAction,
+  toggleBankDetailsActiveAction,
 } from "@/lib/actions/deposit-settings";
 import type { CryptoDepositOption, BankTransferDetails } from "@/lib/queries/deposit-settings";
 
@@ -247,7 +248,9 @@ function BankDetailsManager({ initialDetails }: { initialDetails: BankTransferDe
   const [swiftBic, setSwiftBic] = React.useState(initialDetails?.swift_bic ?? "");
   const [routingNumber, setRoutingNumber] = React.useState(initialDetails?.routing_number ?? "");
   const [iban, setIban] = React.useState(initialDetails?.iban ?? "");
+  const [isActive, setIsActive] = React.useState(initialDetails?.is_active ?? true);
   const [isPending, startTransition] = React.useTransition();
+  const [isTogglingPending, startToggleTransition] = React.useTransition();
   const [result, setResult] = React.useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -261,6 +264,7 @@ function BankDetailsManager({ initialDetails }: { initialDetails: BankTransferDe
     formData.set("swiftBic", swiftBic);
     formData.set("routingNumber", routingNumber);
     formData.set("iban", iban);
+    formData.set("isActive", String(isActive));
 
     startTransition(async () => {
       const res = await updateBankDetailsAction({ error: null }, formData);
@@ -272,99 +276,155 @@ function BankDetailsManager({ initialDetails }: { initialDetails: BankTransferDe
     });
   };
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-3 rounded-2xl glass-surface glass-border p-5"
-    >
-      <h3 className="text-sm font-semibold text-[rgb(var(--foreground))]">
-        Bank Transfer Details
-      </h3>
+  const handleToggleVisibility = () => {
+    if (!initialDetails) return;
+    const formData = new FormData();
+    formData.set("id", initialDetails.id);
+    formData.set("isActive", String(isActive));
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div>
-          <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
-            Account Holder Name
-          </label>
-          <input
-            required
-            value={accountName}
-            onChange={(e) => setAccountName(e.target.value)}
-            placeholder="e.g. Liberty Equity Holdings Ltd"
-            className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
-          />
+    startToggleTransition(async () => {
+      const res = await toggleBankDetailsActiveAction({ error: null }, formData);
+      if (!res.error) {
+        setIsActive((prev) => !prev);
+        setResult({
+          type: "success",
+          message: !isActive
+            ? "Bank details are now visible to users."
+            : "Bank details are now hidden from users, only the crypto tab will show.",
+        });
+      }
+    });
+  };
+
+  return (
+    <div className="rounded-2xl glass-surface glass-border p-5">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-[rgb(var(--foreground))]">
+            Bank Transfer Details
+          </h3>
+          {!isActive && (
+            <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[9px] font-semibold uppercase text-[rgb(var(--muted))]">
+              Hidden from users
+            </span>
+          )}
         </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
-            Account Number
-          </label>
-          <input
-            required
-            value={accountNumber}
-            onChange={(e) => setAccountNumber(e.target.value)}
-            placeholder="e.g. 0123456789"
-            className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
-            Bank Name
-          </label>
-          <input
-            required
-            value={bankName}
-            onChange={(e) => setBankName(e.target.value)}
-            placeholder="e.g. First Atlantic Bank"
-            className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
-            SWIFT / BIC Code
-          </label>
-          <input
-            required
-            value={swiftBic}
-            onChange={(e) => setSwiftBic(e.target.value)}
-            placeholder="e.g. FABKUS33XXX"
-            className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
-            Routing Number <span className="text-[rgb(var(--muted))]/60">(optional)</span>
-          </label>
-          <input
-            value={routingNumber}
-            onChange={(e) => setRoutingNumber(e.target.value)}
-            placeholder="e.g. 021000021"
-            className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
-            IBAN <span className="text-[rgb(var(--muted))]/60">(optional)</span>
-          </label>
-          <input
-            value={iban}
-            onChange={(e) => setIban(e.target.value)}
-            placeholder="e.g. GB29 NWBK 6016 1331 9268 19"
-            className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
-          />
-        </div>
+
+        {initialDetails && (
+          <button
+            type="button"
+            onClick={handleToggleVisibility}
+            disabled={isTogglingPending}
+            className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60 ${
+              isActive
+                ? "glass-border text-[rgb(var(--muted))] hover:text-[rgb(var(--foreground))]"
+                : "border-bull/30 bg-bull/10 text-bull hover:bg-bull/15"
+            }`}
+          >
+            {isTogglingPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : isActive ? (
+              <Eye className="h-3.5 w-3.5" />
+            ) : (
+              <EyeOff className="h-3.5 w-3.5" />
+            )}
+            {isActive ? "Visible to users" : "Hidden, click to show"}
+          </button>
+        )}
       </div>
 
-      <Toast result={result} />
+      <p className="mt-1 text-xs text-[rgb(var(--muted))]">
+        {isActive
+          ? "Users see both Crypto and Bank Transfer tabs on the deposit page."
+          : "Users only see the Crypto tab right now, the Bank Transfer tab is hidden."}
+      </p>
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="flex w-fit items-center gap-2 rounded-full bg-bull px-5 py-2.5 text-sm font-semibold text-[#07090e] transition-transform hover:scale-[1.02] disabled:opacity-60"
-      >
-        {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-        Save Bank Details
-      </button>
-    </form>
+      <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
+              Account Holder Name
+            </label>
+            <input
+              required
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
+              placeholder="e.g. Liberty Equity Holdings Ltd"
+              className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
+              Account Number
+            </label>
+            <input
+              required
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              placeholder="e.g. 0123456789"
+              className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
+              Bank Name
+            </label>
+            <input
+              required
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              placeholder="e.g. First Atlantic Bank"
+              className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
+              SWIFT / BIC Code
+            </label>
+            <input
+              required
+              value={swiftBic}
+              onChange={(e) => setSwiftBic(e.target.value)}
+              placeholder="e.g. FABKUS33XXX"
+              className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
+              Routing Number <span className="text-[rgb(var(--muted))]/60">(optional)</span>
+            </label>
+            <input
+              value={routingNumber}
+              onChange={(e) => setRoutingNumber(e.target.value)}
+              placeholder="e.g. 021000021"
+              className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[rgb(var(--muted))]">
+              IBAN <span className="text-[rgb(var(--muted))]/60">(optional)</span>
+            </label>
+            <input
+              value={iban}
+              onChange={(e) => setIban(e.target.value)}
+              placeholder="e.g. GB29 NWBK 6016 1331 9268 19"
+              className="w-full rounded-lg glass-surface glass-border border px-3 py-2.5 text-sm text-[rgb(var(--foreground))] outline-none focus:border-bull/50"
+            />
+          </div>
+        </div>
+
+        <Toast result={result} />
+
+        <button
+          type="submit"
+          disabled={isPending}
+          className="flex w-fit items-center gap-2 rounded-full bg-bull px-5 py-2.5 text-sm font-semibold text-[#07090e] transition-transform hover:scale-[1.02] disabled:opacity-60"
+        >
+          {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          Save Bank Details
+        </button>
+      </form>
+    </div>
   );
 }
 

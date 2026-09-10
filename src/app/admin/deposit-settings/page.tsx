@@ -1,10 +1,10 @@
-import { getAllCryptoDepositOptions, getBankTransferDetails } from "@/lib/queries/deposit-settings";
+import { getAllCryptoDepositOptions, getAdminBankTransferDetails } from "@/lib/queries/deposit-settings";
 import { AdminDepositSettingsManager } from "@/components/admin/admin-deposit-settings-manager";
 
 export default async function AdminDepositSettingsPage() {
   const [cryptoOptions, bankDetails] = await Promise.all([
     getAllCryptoDepositOptions(),
-    getBankTransferDetails(),
+    getAdminBankTransferDetails(),
   ]);
 
   return (

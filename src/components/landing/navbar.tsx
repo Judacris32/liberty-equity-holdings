@@ -58,12 +58,24 @@ export function Navbar({
         >
           <Logo forceLight={!solid} />
 
-          <nav className="hidden items-center gap-8 md:flex">
+          {/* Pill-style nav links — hover background uses --foreground at
+              low opacity, which naturally inverts with theme (a dark tint
+              on light backgrounds, a light tint on dark ones) using the
+              same CSS vars as everywhere else on the site. On the
+              transparent-over-hero state, the background is always a
+              dark photo regardless of theme, so those get a fixed
+              light-on-dark treatment instead, matching the logo's
+              forceLight pattern. */}
+          <nav className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-[rgb(var(--muted))] transition-colors hover:text-[rgb(var(--foreground))]"
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  solid
+                    ? "text-[rgb(var(--muted))] hover:bg-[rgb(var(--foreground))]/[0.06] hover:text-[rgb(var(--foreground))]"
+                    : "text-white/80 hover:bg-white/10 hover:text-white"
+                }`}
               >
                 {link.label}
               </Link>
@@ -116,7 +128,7 @@ export function Navbar({
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-[rgb(var(--muted))] transition-colors hover:bg-white/[0.04] hover:text-[rgb(var(--foreground))]"
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-[rgb(var(--muted))] transition-colors hover:bg-[rgb(var(--foreground))]/[0.06] hover:text-[rgb(var(--foreground))]"
               >
                 {link.label}
               </Link>

@@ -83,6 +83,12 @@ export function DepositAddressCard({
   cryptoOptions: CryptoDepositOption[];
   bankDetails: BankTransferDetails | null;
 }) {
+  // If bank transfer has been hidden by an admin, don't even show the tab
+  // — a clickable tab that leads to an empty state is worse than just not
+  // offering it. Crypto becomes the only option, shown directly.
+  const bankAvailable = bankDetails !== null;
+  const effectiveTab = bankAvailable ? tab : "crypto";
+
   const bankFields = bankDetails
     ? [
         { label: "Account Name", value: bankDetails.account_name },
@@ -102,46 +108,48 @@ export function DepositAddressCard({
         <h3 className="text-sm font-semibold text-[rgb(var(--foreground))]">
           Deposit Address
         </h3>
-        <div className="flex gap-1 rounded-full glass-border border p-1">
-          <button
-            type="button"
-            onClick={() => onTabChange("crypto")}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-              tab === "crypto"
-                ? "bg-bull/10 text-bull"
-                : "text-[rgb(var(--muted))] hover:text-[rgb(var(--foreground))]"
-            }`}
-          >
-            <Bitcoin className="h-3.5 w-3.5" />
-            Crypto
-          </button>
-          <button
-            type="button"
-            onClick={() => onTabChange("bank")}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-              tab === "bank"
-                ? "bg-bull/10 text-bull"
-                : "text-[rgb(var(--muted))] hover:text-[rgb(var(--foreground))]"
-            }`}
-          >
-            <Landmark className="h-3.5 w-3.5" />
-            Bank Transfer
-          </button>
-        </div>
+        {bankAvailable && (
+          <div className="flex gap-1 rounded-full glass-border border p-1">
+            <button
+              type="button"
+              onClick={() => onTabChange("crypto")}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                effectiveTab === "crypto"
+                  ? "bg-bull/10 text-bull"
+                  : "text-[rgb(var(--muted))] hover:text-[rgb(var(--foreground))]"
+              }`}
+            >
+              <Bitcoin className="h-3.5 w-3.5" />
+              Crypto
+            </button>
+            <button
+              type="button"
+              onClick={() => onTabChange("bank")}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                effectiveTab === "bank"
+                  ? "bg-bull/10 text-bull"
+                  : "text-[rgb(var(--muted))] hover:text-[rgb(var(--foreground))]"
+              }`}
+            >
+              <Landmark className="h-3.5 w-3.5" />
+              Bank Transfer
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 flex flex-col gap-2.5">
-        {tab === "crypto" ? (
+        {effectiveTab === "crypto" ? (
           cryptoOptions.length > 0 ? (
             cryptoOptions.map((option) => (
               <CryptoAddressRow key={option.id} option={option} />
             ))
           ) : (
             <p className="py-4 text-center text-xs text-[rgb(var(--muted))]">
-              No crypto deposit options are available right now.
+              No deposit options are available right now.
             </p>
           )
-        ) : bankFields.length > 0 ? (
+        ) : (
           bankFields.map((field) => (
             <div
               key={field.label}
@@ -158,10 +166,6 @@ export function DepositAddressCard({
               <CopyButton value={field.value} />
             </div>
           ))
-        ) : (
-          <p className="py-4 text-center text-xs text-[rgb(var(--muted))]">
-            Bank transfer details are not available right now.
-          </p>
         )}
       </div>
 

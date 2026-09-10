@@ -112,6 +112,11 @@ export async function updateBankDetailsAction(
   formData: FormData
 ): Promise<SettingsActionState> {
   const id = formData.get("id") as string | null;
+  // Preserves whatever the current visibility state was — editing the
+  // details (fixing a typo, updating an account number) should never
+  // silently un-hide something the admin deliberately hid. Visibility is
+  // only ever changed by the dedicated toggle action below.
+  const currentIsActive = formData.get("isActive") === "true";
 
   const parsed = bankDetailsSchema.safeParse({
     accountName: formData.get("accountName"),
@@ -136,7 +141,7 @@ export async function updateBankDetailsAction(
       swift_bic: parsed.data.swiftBic,
       routing_number: parsed.data.routingNumber ?? null,
       iban: parsed.data.iban ?? null,
-      is_active: true,
+      is_active: id ? currentIsActive : true, // new record defaults to visible
       updated_at: new Date().toISOString(),
     };
 
@@ -145,6 +150,33 @@ export async function updateBankDetailsAction(
       : await supabase.from("bank_transfer_details").insert(payload);
 
     if (error) return { error: "Failed to save bank details." };
+
+    revalidatePath("/admin/deposit-settings");
+    revalidatePath("/dashboard/deposit");
+    return { error: null, success: true };
+  } catch {
+    return { error: "You are not authorized to perform this action." };
+  }
+}
+
+export async function toggleBankDetailsActiveAction(
+  _prevState: SettingsActionState,
+  formData: FormData
+): Promise<SettingsActionState> {
+  const id = formData.get("id") as string;
+  const isActive = formData.get("isActive") === "true";
+
+  if (!id) return { error: "Missing bank details id." };
+
+  try {
+    const supabase = await requireAdmin();
+
+    const { error } = await supabase
+      .from("bank_transfer_details")
+      .update({ is_active: !isActive, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) return { error: "Failed to update visibility." };
 
     revalidatePath("/admin/deposit-settings");
     revalidatePath("/dashboard/deposit");

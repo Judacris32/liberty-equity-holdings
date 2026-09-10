@@ -14,6 +14,7 @@ import {
   Banknote,
   Wallet2,
   Settings2,
+  Users,
   Settings,
   LogOut,
   X,
@@ -65,6 +66,7 @@ export function Sidebar({
         {
           label: "Admin",
           items: [
+            { label: "Users", href: "/admin/users", icon: Users },
             { label: "KYC Review", href: "/admin/kyc", icon: ShieldAlert },
             { label: "Deposit Review", href: "/admin/deposits", icon: Banknote },
             { label: "Withdrawal Review", href: "/admin/withdrawals", icon: ArrowUpFromLine },
