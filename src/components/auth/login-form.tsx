@@ -68,7 +68,7 @@ export function LoginForm() {
       />
 
       <div className="flex justify-end">
-        <a href="#" className="text-xs font-medium text-bull hover:underline">
+        <a href="/forgot-password" className="text-xs font-medium text-bull hover:underline">
           Forgot password?
         </a>
       </div>
