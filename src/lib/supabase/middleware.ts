@@ -7,6 +7,19 @@ import { NextResponse, type NextRequest } from "next/server";
  * middleware.ts small and easy to audit.
  */
 export async function updateSession(request: NextRequest) {
+  // Safety net: if Supabase falls back to the Site URL, a reset link arrives
+  // as /?code=... (or /?error_code=...). Hand it to /auth/confirm, which
+  // finishes the sign-in and opens the reset page.
+  const { pathname, searchParams } = request.nextUrl;
+  if (pathname === "/" && (searchParams.has("code") || searchParams.has("error_code"))) {
+    const confirmUrl = request.nextUrl.clone();
+    confirmUrl.pathname = searchParams.has("code") ? "/auth/confirm" : "/forgot-password";
+    if (!searchParams.has("code")) {
+      confirmUrl.search = "?error=link_expired";
+    }
+    return NextResponse.redirect(confirmUrl);
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
