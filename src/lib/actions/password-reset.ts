@@ -36,7 +36,9 @@ export async function requestPasswordResetAction(
   const siteUrl = await getSiteUrl();
 
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${siteUrl}/auth/callback?next=/reset-password`,
+    // The email template builds the link from this:
+    // {{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery&next=/reset-password
+    redirectTo: `${siteUrl}/auth/confirm`,
   });
 
   if (error) {
