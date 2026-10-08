@@ -5,6 +5,41 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, X, Send, Loader2, CheckCircle2 } from "lucide-react";
 import { submitSupportMessage } from "@/lib/actions/support";
 
+// Web3Forms delivers each message to the inbox the access key was created
+// for. Set NEXT_PUBLIC_WEB3FORMS_KEY in Vercel (and .env.local for dev).
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+
+async function sendToInbox(data: { name: string; email: string; message: string }) {
+  if (!WEB3FORMS_KEY) {
+    console.error("[chat-widget] NEXT_PUBLIC_WEB3FORMS_KEY is not set — message not emailed.");
+    return false;
+  }
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: `New website message from ${data.name || data.email}`,
+        from_name: "Liberty Equity Holdings website",
+        name: data.name || "Not provided",
+        email: data.email,
+        replyto: data.email,
+        message: data.message,
+      }),
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json?.success) {
+      console.error("[chat-widget] Web3Forms error:", json?.message ?? res.status);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[chat-widget] Web3Forms request failed:", err);
+    return false;
+  }
+}
+
 export function ChatWidget() {
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState("");
@@ -23,8 +58,14 @@ export function ChatWidget() {
     formData.set("message", message);
 
     startTransition(async () => {
-      const res = await submitSupportMessage({ error: null }, formData);
-      if (res.error) {
+      // Save a copy in Supabase and email it at the same time.
+      const [res, emailed] = await Promise.all([
+        submitSupportMessage({ error: null }, formData),
+        sendToInbox({ name, email, message }),
+      ]);
+      // Validation errors (bad email, too short) come from the server action —
+      // show those. Otherwise it's a success if either delivery worked.
+      if (res.error && !emailed) {
         setResult({ type: "error", message: res.error });
       } else {
         setResult({ type: "success", message: "Sent — we'll reply by email." });
@@ -50,7 +91,7 @@ export function ChatWidget() {
                   Leave us a message
                 </p>
                 <p className="mt-0.5 text-xs text-[rgb(var(--muted))]">
-                  Not a live chat — we typically reply within a day.
+                  Not a live chat, we typically reply within a day.
                 </p>
               </div>
               <button
